@@ -1,31 +1,31 @@
 // On "ToRGB" click, get the value of the Hex Color and transform it to RGB
-$("#torgb").click(function () {
+document.getElementById("torgb").addEventListener("click", function () {
   if (document.getElementById("hexcolor").validity.valid) {
-    var newcolor = hextorgb($("#hexcolor").val());
-    $("#rgbcolor").val(newcolor);
+    var newcolor = hextorgb(document.getElementById("hexcolor").value);
+    document.getElementById("rgbcolor").value = newcolor;
     changeshowncolor(newcolor);
   }
 });
 
 // Function to trigger the event when you press enter in the input box
-$("#hexcolor").keydown(function(e){
-    if(e.keyCode == 13) { //Enter
-        $("#torgb").trigger("click");
+document.getElementById("hexcolor").addEventListener("keydown", function(e){
+    if(e.key === "Enter") { //Enter
+        document.getElementById("torgb").click();
     }
 })
 
 // Function to trigger the event when you press enter in the input box
-$("#rgbcolor").keydown(function(e){
-    if(e.keyCode == 13) { //Enter
-        $("#tohex").trigger("click");
+document.getElementById("rgbcolor").addEventListener("keydown", function(e){
+    if(e.key === "Enter") { //Enter
+        document.getElementById("tohex").click();
     }
 })
 
 // On "ToHex" click, get the value of the RGB Color and transform it to Hexadecimal
-$("#tohex").click(function () {
+document.getElementById("tohex").addEventListener("click", function () {
   if (document.getElementById("rgbcolor").validity.valid) {
-    var newcolor = rgbtohex($("#rgbcolor").val());
-    $("#hexcolor").val(newcolor);
+    var newcolor = rgbtohex(document.getElementById("rgbcolor").value);
+    document.getElementById("hexcolor").value = newcolor;
     changeshowncolor(newcolor);
   }
 });
@@ -41,6 +41,10 @@ function hextorgb(hex) {
     var r = (integer >> 8) & 15; //16 bits out
     var g = (integer >> 4) & 15; //8 bits out
     var b = integer & 15; //last 8 bits
+    // For shorthand hex, we need to duplicate the nibbles
+    r = r | (r << 4);
+    g = g | (g << 4);
+    b = b | (b << 4);
   }
 
   return [r, g, b].join();
@@ -51,22 +55,23 @@ function rgbtohex(rgb) {
   var array = rgb.split(",");
   var output = "";
   var aux = "";
-  for (i = 0; i < array.length; i++) {
+  for (let i = 0; i < array.length; i++) {
     aux = parseInt(array[i], 10).toString(16); // Important to parse the int first; toString(16) --> Base 16
     if (aux.length < 2) { // to output 3 complete bytes
-      aux = 0 + aux;
+      aux = "0" + aux;
     }
     output += aux;
   }
 
-  return output;
+  return output.toUpperCase();
 }
 
 // It changes the showed color
 function changeshowncolor(color) {
+  var convcolorElement = document.getElementById("convcolor");
   if (color.indexOf(",") == "-1") { //Hexadecimal value
-    $("#convcolor").css("background-color", "#" + color);
+    convcolorElement.style.backgroundColor = "#" + color;
   } else { //RGB value
-    $("#convcolor").css("background-color", "rgb(" + color + ")");
+    convcolorElement.style.backgroundColor = "rgb(" + color + ")";
   }
 }
